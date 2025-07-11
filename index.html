@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tester Tool | Translation Finder</title>
+  
+  <!-- Google Fonts for a modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+ 
+</head>
+
+<style>
+  :root {
+  --primary-color: #6366F1;         /* Vibrant indigo/blue from the image */
+  --primary-color-dark: #4F46E5;    /* A darker shade for hover */
+  --card-background: #FFFFFF;       /* Clean white cards */
+  --background-start: #a2a8f5;      /* Light purple gradient start */
+  --background-end: #6e7ff3;        /* Light blue gradient end */
+  
+  --text-color-primary: #1F2937;    /* Dark gray for main text */
+  --text-color-secondary: #6B7280;  /* Lighter gray for subtitles/labels */
+  --border-color: #E5E7EB;          /* Very light gray for borders */
+  --input-background: #F9FAFB;      /* Off-white for inputs */
+
+  --success-color: #10B981;         /* A modern green */
+  --warning-color: #F59E0B;         /* A modern amber */
+  --error-color: #EF4444;           /* A modern red */
+  
+  --font-family: 'Roboto', sans-serif;
+  --border-radius-lg: 20px;         /* Large radius for cards */
+  --border-radius-md: 12px;         /* Medium for inputs/buttons */
+  --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- General & Body Styles --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background: linear-gradient(135deg, var(--background-start), var(--background-end));
+  color: var(--text-color-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Main Layout Wrapper - MADE BIGGER --- */
+.main-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1400px; /* Increased from 1200px */
+  animation: fadeIn 0.8s ease-out; /* Added shadow for depth */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Card Style --- */
+.card {
+  background: var(--card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+  padding: 2.5rem; /* More padding */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: #303c4e 0px 0px 15px 0px;
+}
+
+.tool-container {
+  flex: 1.8;
+  min-width: 320px;
+  max-width: 800px; /* Increased from 700px */
+}
+
+.docs-container {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  animation: slideInRight 0.6s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Typography --- */
+h1 { font-size: 2.25rem; font-weight: 700; }
+h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  border-bottom: 3px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.subtitle { color: var(--text-color-secondary); margin-bottom: 2rem; }
+.section-title { font-weight: 700; color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+
+/* --- Form Elements --- */
+.form-group { margin-bottom: 1.5rem; }
+label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-color-secondary); }
+input[type="text"], select {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  background-color: var(--input-background);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+input[type="text"]:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+input[type="file"] { display: none; }
+
+/* --- Buttons --- */
+button {
+  padding: 0.9rem 1.75rem;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.search-button {
+  margin-top: 1rem;
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1.1rem;
+}
+.search-button:hover:not(:disabled) {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(123, 123, 124, 0.3);
+}
+.search-button:disabled { background-color: #A5B4FC; cursor: not-allowed; }
+.file-button, .instructions-button {
+  background-color: #F3F4F6;
+  color: var(--text-color-primary);
+  border: 1px solid var(--border-color);
+}
+.file-button:hover, .instructions-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(123, 123, 124, 0.3);
+  background-color: #E5E7EB;
+ }
+
+.tool-header-row { 
+  display: flex;
+   justify-content: space-between; 
+  align-items: center; margin-bottom: 0.5rem;
+   }
+
+/* --- Status & File List --- */
+#file-list {
+  margin-top: 1.5rem;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  background-color: var(--input-background);
+}
+.file-list-header { font-weight: 500; margin-bottom: 0.5rem; }
+.file-list-content { color: var(--text-color-secondary); font-size: 0.9rem; max-height: 100px; overflow-y: auto; word-break: break-all; }
+
+/* --- Results Section & General Messages --- */
+.result-section { margin-top: 2.5rem; }
+.result-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+.result-box { padding: 1rem; border-radius: var(--border-radius-md); border-left: 5px solid; }
+.result-box.error { border-color: var(--error-color); color: var(--error-color); background-color: rgba(239, 68, 68, 0.1); }
+.result-box.success { border-color: var(--success-color); color: var(--success-color); background-color: rgba(16, 185, 129, 0.1); }
+#results-container { display: flex; flex-direction: column; gap: 1.5rem; }
+
+/*
+========================================
+STYLES FOR DYNAMICALLY GENERATED RESULTS
+========================================
+*/
+
+/* Headers inside the results container */
+.result-header { padding: 1.25rem; border-radius: var(--border-radius-md); margin-bottom: 1rem; font-weight: 500; line-height: 1.5; }
+.result-header.found { background-color: rgba(16, 185, 129, 0.1); border-left: 5px solid var(--success-color); color: #065F46; }
+.result-subheader { background-color: #F3F4F6; color: var(--text-color-secondary); padding: 0.75rem 1.25rem; border-radius: var(--border-radius-md); margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+/* The results table itself */
+.results-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-bottom: 1.5rem; }
+.results-table-header th {
+  padding: 0.8rem 1.25rem;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+.results-table tbody tr {
+    background-color: #fff;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);
+    border-radius: var(--border-radius-md);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.results-table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,0.07);
+}
+.results-table-row td { padding: 1.25rem; vertical-align: middle; border: 1px solid var(--border-color); border-width: 1px 0; }
+.results-table-row td:first-child { border-left-width: 1px; border-radius: var(--border-radius-md) 0 0 var(--border-radius-md); }
+.results-table-row td:last-child { border-right-width: 1px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.file-cell, .language-cell { display: flex; align-items: center; gap: 0.75rem; }
+.value-cell {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: var(--input-background);
+  color: var(--primary-color-dark);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem !important;
+  font-size: 0.95rem;
+}
+
+/* --- Pagination Styles --- */
+.pagination-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; }
+.pagination-info { font-size: 0.9rem; color: var(--text-color-secondary); }
+.pagination-controls { display: flex; align-items: center; gap: 0.75rem; }
+.pagination-btn { background-color: #fff; border: 1px solid var(--border-color); color: var(--text-color-primary); font-weight: 500; }
+.pagination-btn:hover:not(:disabled) { background-color: #F9FAFB; border-color: #D1D5DB; }
+.pagination-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.page-numbers { display: flex; align-items: center; gap: 0.25rem; }
+.page-number { padding: 0.6rem 1rem; border-radius: var(--border-radius-md); cursor: pointer; font-weight: 500; transition: background-color 0.2s ease, color 0.2s ease; }
+.page-number:hover { background-color: #EFF1FF; color: var(--primary-color-dark); }
+.page-number.active { background-color: var(--primary-color); color: white; font-weight: 700; cursor: default; }
+
+/* --- Footer --- */
+.footer-credit { margin-top: 2rem; text-align: center; color: var(--card-background); opacity: 0.8; font-size: 0.9rem; animation: fadeIn 1s 0.5s ease-out backwards; }
+</style>
+
+<body>
+
+
+<div class="main-wrapper">
+  <!-- Left Column: The Tool -->
+  <div class="tool-container card">
+    <div class="tool-header-row">
+      <h1>Tester Tool</h1>
+      <button class="instructions-button" onclick="toggleInstructions()">📘 Show Instructions</button>
+    </div>
+    <p class="subtitle">Find the Key from a Value - Automatic folder search</p>
+
+    <div class="form-group">
+      <label for="valueInput">Enter value:</label>
+      <input type="text" id="valueInput" placeholder="Insert your value" />
+    </div>
+
+    <div class="form-group">
+      <label for="directoryInput">Select folder with JSON files:</label>
+      <input type="file" id="directoryInput" webkitdirectory directory multiple onchange="loadDirectory()" />
+      <button class="file-button default" id="directoryButton" onclick="document.getElementById('directoryInput').click()">
+        📁 Upload Folder
+      </button>
+    </div>
+
+    <div id="status-section" class="status-section" style="display: none;">
+      <div id="success-status" class="status-item" style="display: none;">
+        <span class="status-icon success">✅</span>
+        <span id="success-text"></span>
+      </div>
+      <div id="warning-status" class="status-item" style="display: none;">
+        <span class="status-icon warning">⚠️</span>
+        <span id="warning-text"></span>
+      </div>
+    </div>
+
+    <div id="file-list" class="file-list" style="display: none;">
+      <div class="file-list-header">
+        📁 <span id="folder-name">Folder: translations</span>
+      </div>
+      <div class="file-list-content" id="file-list-content">
+        Files: hy.json, tr.json, sl.json, hu.json, su.json, lt.json, bo.json, de.json, mt.json, ru.json, pl.json, fr.json, el.json, bg.json, ro.json, sp.json, ko.json, sr-SI.json, en-UF.json, nb.json, da.json, en-UF.json, lv.json, da.json, en.json
+      </div>
+    </div>
+
+    <button class="search-button" onclick="findKey()" id="searchButton" disabled>Search</button>
+
+    <div class="result-section">
+      <div class="form-group">
+        <label for="itemsPerPageSelect">Results per page:</label>
+        <select id="itemsPerPageSelect">
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+
+      <div class="result-title">Result:</div>
+      <div class="result-box error" id="result">
+        ❌ You must enter a value to search.
+      </div>
+      <div id="results-container" class="results-container" style="display: none;">
+        <!-- Results will be populated here -->
+      </div>
+    </div>
+  </div>
+  
+
+
+    
+    <!-- Right Column: The Documentation -->
+  <div id="instructions" class="docs-container card" style="display: none;">
+    <h2>Usage Instructions</h2>
+    
+    <p class="section-title">Steps</p>
+    <ol>
+      <li><strong>Select Folder:</strong> Click the "Select Folder" button and choose the folder that contains the translation JSON files (e.g., translations folder).</li>
+      <li><strong>Enter Value:</strong> In the "Enter value" field, type the exact phrase or word (value) for which you want to find the key.</li>
+      <li><strong>Search:</strong> Click the "Search" button to view the results.</li>
+    </ol>
+
+    <p class="section-title">How It Works</p>
+    <p>The application automatically searches through <strong>all JSON files</strong> in the selected folder to find the 'value' you provided. Once found, it retrieves the corresponding 'key'.</p>
+    
+    <p>Then, using that 'key', it searches <em>all</em> JSON files and returns the value associated with it, along with the file name and the corresponding language.</p>
+  </div>
+   </div>
+
+  <div class="footer-credit">
+    🎁 crafted with ❤️ from Interns 2025 to terracom QA team
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
