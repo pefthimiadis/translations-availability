@@ -59,7 +59,7 @@ async function loadDirectory() {
     statusSection.style.display = "none";
     fileList.style.display = "none";
     directoryButton.className = "file-button default";
-    directoryButton.innerHTML = "📁 Upload folder";
+    directoryButton.innerHTML = "📁 Select folder";
     searchButton.disabled = true;
     resultBox.className = "result-box error";
     resultBox.innerHTML = "❌ You must provide a value to search..";
