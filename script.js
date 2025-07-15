@@ -30,6 +30,8 @@ let currentPage = 1;
 let itemsPerPage = 5;
 let lastFoundKey = '';
 let lastFoundFile = '';
+let selectedFile = 'all';
+let showOnlyMissing = false;
 
 function getLanguageFromFilename(filename) {
   const match = filename.match(/([a-z]{2}(-[A-Z]{2})?)\.json$/i);
@@ -220,6 +222,12 @@ function showResults(foundKey, searchValue, foundFile, allFiles) {
   
   // Build the results data
   currentResults = [];
+  const fileFilter = document.getElementById("fileFilterSelect");
+  fileFilter.innerHTML = '<option value="all">All Files</option>';
+  selectedFile = 'all';
+  showOnlyMissing = false;
+  document.getElementById("showMissingButton").textContent = 'Show Missing Files';
+  document.getElementById("filter-controls").style.display = 'block';
   
   for (const fileData of allFiles) {
     try {
@@ -249,24 +257,42 @@ function showResults(foundKey, searchValue, foundFile, allFiles) {
       });
     }
   }
+
+  // Populate dropdown with file names
+  for (const fileData of allFiles) {
+    const opt = document.createElement('option');
+    opt.value = fileData.name;
+    opt.textContent = fileData.name;
+    fileFilter.appendChild(opt);
+  }
   
   // Reset to first page
   currentPage = 1;
-  
+
   // Show results with pagination
   displayResultsPage(foundKey, foundFile);
+}
+
+function getFilteredResults() {
+  return currentResults.filter(r =>
+    (selectedFile === 'all' || r.file === selectedFile) &&
+    (!showOnlyMissing || r.value === 'Missing ❌')
+  );
 }
 
 function displayResultsPage() {
   const foundKey = lastFoundKey;
   const foundFile = lastFoundFile;
   const resultsContainer = document.getElementById("results-container");
-  
+
+  // Apply filtering
+  let filteredResults = getFilteredResults();
+
   // Calculate pagination
-  const totalPages = Math.ceil(currentResults.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const pageResults = currentResults.slice(startIndex, endIndex);
+  const pageResults = filteredResults.slice(startIndex, endIndex);
   
   // Build table rows for current page
   let tableRows = "";
@@ -303,7 +329,7 @@ function displayResultsPage() {
     paginationControls = `
       <div class="pagination-container">
         <div class="pagination-info">
-          Showing ${startIndex + 1}-${Math.min(endIndex, currentResults.length)} of ${currentResults.length} results
+          Showing ${startIndex + 1}-${Math.min(endIndex, filteredResults.length)} of ${filteredResults.length} results
         </div>
         <div class="pagination-controls">
           <button class="pagination-btn" onclick="previousPage()" ${currentPage === 1 ? 'disabled' : ''}>
@@ -351,7 +377,7 @@ function goToPage(page) {
 }
 
 function nextPage() {
-  const totalPages = Math.ceil(currentResults.length / itemsPerPage);
+  const totalPages = Math.ceil(getFilteredResults().length / itemsPerPage);
   if (currentPage < totalPages) {
     currentPage++;
     displayResultsPage(); // We need to store these values
@@ -377,6 +403,8 @@ function readFile(file) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const select = document.getElementById("itemsPerPageSelect");
+  const fileFilter = document.getElementById("fileFilterSelect");
+  const showMissingBtn = document.getElementById("showMissingButton");
 
   select.addEventListener("change", () => {
     itemsPerPage = parseInt(select.value) || 5;
@@ -386,6 +414,23 @@ document.addEventListener("DOMContentLoaded", () => {
       displayResultsPage(lastFoundKey, lastFoundFile);
     }
   });
+
+  if (fileFilter) {
+    fileFilter.addEventListener('change', () => {
+      selectedFile = fileFilter.value;
+      currentPage = 1;
+      displayResultsPage();
+    });
+  }
+
+  if (showMissingBtn) {
+    showMissingBtn.addEventListener('click', () => {
+      showOnlyMissing = !showOnlyMissing;
+      showMissingBtn.textContent = showOnlyMissing ? 'Show All Files' : 'Show Missing Files';
+      currentPage = 1;
+      displayResultsPage();
+    });
+  }
 });
 
 function toggleInstructions() {
